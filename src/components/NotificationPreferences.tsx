@@ -94,6 +94,8 @@ export default function NotificationPreferences() {
   const [pushEnabled, setPushEnabled] = useState(false);
   const [fcmToken, setFcmToken] = useState<string | null>(null);
   const [dismissed, setDismissed] = useState(false);
+  const [debugLog, setDebugLog] = useState<string[]>([]);
+  const log = (msg: string) => setDebugLog((prev) => [...prev, msg]);
 
   useEffect(() => {
     const fetchPreferences = async () => {
@@ -115,14 +117,13 @@ export default function NotificationPreferences() {
   }, []);
 
   const handleEnablePush = async () => {
+    log("Permission before: " + Notification.permission);
     const token = await requestNotificationPermission();
+    log("Token received: " + (token ? token.slice(0, 20) + "..." : "null"));
+    log("Permission after: " + Notification.permission);
     if (token) {
-      setFcmToken(token);
       setPushEnabled(true);
-      setPreferences((prev) => ({
-        ...prev,
-        channels: { ...prev.channels, push: true },
-      }));
+      setPreferences((prev) => ({ ...prev, channels: { ...prev.channels, push: true } }));
       setSaved(false);
     }
   };
@@ -148,28 +149,32 @@ export default function NotificationPreferences() {
   };
 
   const handleSave = async () => {
-    setLoading(true);
-    try {
+  setLoading(true);
+  log("Stored token: " + (localStorage.getItem("fcmToken") || "null"));
+  try {
       const response = await fetch("/api/notifications/preferences", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: "demo-user", preferences }),
       });
 
-      if (response.ok) setSaved(true);
+    if (response.ok) setSaved(true);
 
-      if (fcmToken) {
-        await fetch("/api/notifications/send", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            token: fcmToken,
-            title: "Cars24 Notification",
-            body: "Your notification preferences have been updated successfully.",
-          }),
-        });
-      }
-    } catch (error) {
+    if (fcmToken) {
+      const sendResponse = await fetch("/api/notifications/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token: fcmToken,
+          title: "Cars24 Notification",
+          body: "Your notification preferences have been updated successfully.",
+        }),
+      });
+      log("Send status: " + sendResponse.status);
+      const result = await sendResponse.json();
+      log("Send result: " + JSON.stringify(result));
+    }
+  } catch (error) {
       console.error("Save failed:", error);
     } finally {
       setLoading(false);
@@ -265,9 +270,8 @@ export default function NotificationPreferences() {
                   e.key === "Enter" || e.key === " " ? toggleChannel(channel.id) : undefined
                 }
                 onClick={() => toggleChannel(channel.id)}
-                className={`flex items-center justify-between rounded-xl border px-5 py-4 cursor-pointer transition-all duration-200 ${
-                  preferences.channels[channel.id] ? activeCard : inactiveCard
-                }`}
+                className={`flex items-center justify-between rounded-xl border px-5 py-4 cursor-pointer transition-all duration-200 ${preferences.channels[channel.id] ? activeCard : inactiveCard
+                  }`}
               >
                 <div>
                   <p className="text-sm font-medium text-white">{channel.label}</p>
@@ -282,14 +286,17 @@ export default function NotificationPreferences() {
         <button
           onClick={handleSave}
           disabled={loading}
-          className={`w-full py-3.5 rounded-xl text-sm font-semibold tracking-wide transition-all duration-200 ${
-            saved
-              ? "bg-[#16a34a] text-white cursor-default"
-              : "bg-[#7c6cff] hover:bg-[#6a5be8] text-white"
-          } disabled:opacity-60 disabled:cursor-not-allowed`}
+          className={`w-full py-3.5 rounded-xl text-sm font-semibold tracking-wide transition-all duration-200 ${saved ? "bg-green-600 text-white cursor-default" : "bg-[#7c6cff] hover:bg-[#6a5be8] text-white"
+            } disabled:opacity-60 disabled:cursor-not-allowed`}
         >
-          {loading ? "Saving…" : saved ? "✓ Preferences Saved" : "Save Preferences"}
+          {loading ? "Saving..." : saved ? "✓ Preferences Saved" : "Save Preferences"}
         </button>
+        
+        {debugLog.length > 0 && (
+          <div className="mt-6 p-3 bg-black border border-zinc-700 rounded-lg text-xs text-green-400 font-mono whitespace-pre-wrap max-h-64 overflow-y-auto">
+            {debugLog.map((l, i) => <div key={i}>{l}</div>)}
+          </div>
+        )}
 
       </div>
     </div>
