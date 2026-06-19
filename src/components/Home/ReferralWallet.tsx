@@ -38,7 +38,7 @@ export default function ReferralWallet() {
   if (!loggedIn) {
     return (
       <div className="max-w-md mx-auto p-6 bg-white rounded-xl shadow mt-10">
-        <h2 className="text-2xl font-bold mb-4">Referral & Wallet</h2>
+        <h2 className="text-2xl font-bold text-gray-900">Referral & Wallet</h2>
         <input className="w-full border rounded-lg p-2 mb-3 text-sm" placeholder="Enter your username" value={username} onChange={(e) => setUsername(e.target.value)} />
         <button onClick={login} className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700">Enter</button>
       </div>

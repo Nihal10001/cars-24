@@ -26,7 +26,7 @@ export default function SearchBar() {
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-xl shadow mt-10">
-      <h2 className="text-2xl font-bold mb-4">Search Cars</h2>
+      <h2 className="text-2xl font-bold mb-4 text-gray-900">Search Cars</h2>
 
       {/* Search input */}
       <div className="relative mb-4">

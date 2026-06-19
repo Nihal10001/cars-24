@@ -16,8 +16,8 @@ export default function DynamicPricing() {
 
   return (
     <div className="max-w-xl mx-auto p-6 bg-white rounded-xl shadow mt-10">
-      <h2 className="text-2xl font-bold mb-1">Dynamic Pricing Engine</h2>
-      <p className="text-gray-500 text-sm mb-6">See the recommended market price based on your region and current season.</p>
+      <h2 className="text-2xl font-bold mb-1 text-gray-900">Dynamic Pricing Engine</h2>
+      <p className="text-gray-600 text-sm mb-6">See the recommended market price based on your region and current season.</p>
 
       <div className="space-y-4">
         <div>

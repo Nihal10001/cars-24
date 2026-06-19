@@ -30,9 +30,7 @@ export default function Home() {
         <CustomerReviews />
 
         <Collapsible title="Notification Preferences">
-          <div className="bg-[#0f0f13] rounded-2xl">
             <NotificationPreferences />
-          </div>
         </Collapsible>
 
         <Collapsible title="Maintenance Cost Estimator">

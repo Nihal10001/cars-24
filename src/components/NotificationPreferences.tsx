@@ -185,17 +185,16 @@ export default function NotificationPreferences() {
   const inactiveCard = "border-[#2a2a35] bg-[#16161c] hover:border-[#3a3a48]";
 
   return (
-    <div className="w-full text-white font-sans px-4 py-12 flex justify-center">
+    <div className="w-full font-sans px-4 py-12 flex justify-center">
       <div className="w-full max-w-xl">
-
         <div className="mb-10">
-          <p className="text-xs uppercase tracking-[0.25em] text-[#9b8cff] font-semibold mb-2">
+          <p className="text-xs uppercase tracking-[0.25em] text-blue-600 font-semibold mb-2">
             Account Settings
           </p>
-          <h1 className="text-3xl font-bold tracking-tight text-white">
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900">
             Notification Preferences
           </h1>
-          <p className="mt-2 text-sm text-[#a1a1aa]">
+          <p className="mt-2 text-sm text-gray-600">
             Choose which events you want to be alerted about and how you receive them.
           </p>
         </div>
