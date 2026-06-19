@@ -94,8 +94,6 @@ export default function NotificationPreferences() {
   const [pushEnabled, setPushEnabled] = useState(false);
   const [fcmToken, setFcmToken] = useState<string | null>(null);
   const [dismissed, setDismissed] = useState(false);
-  const [debugLog, setDebugLog] = useState<string[]>([]);
-  const log = (msg: string) => setDebugLog((prev) => [...prev, msg]);
 
   useEffect(() => {
     const fetchPreferences = async () => {
@@ -117,10 +115,7 @@ export default function NotificationPreferences() {
   }, []);
 
   const handleEnablePush = async () => {
-    log("Permission before: " + Notification.permission);
     const token = await requestNotificationPermission();
-    log("Token received: " + (token ? token.slice(0, 20) + "..." : "null"));
-    log("Permission after: " + Notification.permission);
     if (token) {
       setPushEnabled(true);
       setPreferences((prev) => ({ ...prev, channels: { ...prev.channels, push: true } }));
@@ -150,7 +145,6 @@ export default function NotificationPreferences() {
 
   const handleSave = async () => {
   setLoading(true);
-  log("Stored token: " + (localStorage.getItem("fcmToken") || "null"));
   try {
       const response = await fetch("/api/notifications/preferences", {
         method: "POST",
@@ -161,7 +155,7 @@ export default function NotificationPreferences() {
     if (response.ok) setSaved(true);
 
     if (fcmToken) {
-      const sendResponse = await fetch("/api/notifications/send", {
+      await fetch("/api/notifications/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -170,9 +164,6 @@ export default function NotificationPreferences() {
           body: "Your notification preferences have been updated successfully.",
         }),
       });
-      log("Send status: " + sendResponse.status);
-      const result = await sendResponse.json();
-      log("Send result: " + JSON.stringify(result));
     }
   } catch (error) {
       console.error("Save failed:", error);
@@ -290,12 +281,6 @@ export default function NotificationPreferences() {
         >
           {loading ? "Saving..." : saved ? "✓ Preferences Saved" : "Save Preferences"}
         </button>
-        
-        {debugLog.length > 0 && (
-          <div className="mt-6 p-3 bg-black border border-zinc-700 rounded-lg text-xs text-green-400 font-mono whitespace-pre-wrap max-h-64 overflow-y-auto">
-            {debugLog.map((l, i) => <div key={i}>{l}</div>)}
-          </div>
-        )}
 
       </div>
     </div>
